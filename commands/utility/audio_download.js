@@ -1,10 +1,9 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle,SlashCommandBuilder } from 'discord.js';
 import ytdl from 'ytdl-core';
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { spawn } from 'child_process';
-import wait from 'timers/promises';
 
 dotenv.config({
 	path: '.env'
@@ -13,16 +12,16 @@ dotenv.config({
 const s3 = new S3Client({ region: "ap-northeast-2" })
 
 export const data = new SlashCommandBuilder()
-    .setName('audio_download')
+    .setName('다운로드')
     .setDescription('빠르게 유튜브 영상을 음원으로 추출 합니다 !')
     .addStringOption(option =>
-        option.setName('url')
+        option.setName('링크')
         .setDescription('유튜브 링크를 넣어주세요 !')
         .setRequired(true)
     )
 
 export async function execute(interaction) {
-    const url = interaction.options.getString('url');
+    const 링크 = interaction.options.getString('링크');
 
     console.log('--------------------')
     console.log(`서버: ${interaction.guild.name}`)
@@ -32,7 +31,7 @@ export async function execute(interaction) {
     await interaction.deferReply();
 
     // 노래 제목 확인 및 다운로드
-    const videoTitle = await download(url);
+    const videoTitle = await download(링크);
 
     // 노래 webm => mp3 인코딩
     await encode(videoTitle);
@@ -40,19 +39,26 @@ export async function execute(interaction) {
     // asw S3에 업로드
     const downloadLink = await upload(videoTitle);
 
+    // 버튼 추가
+    const button = new ButtonBuilder()
+        .setLabel('다운로드')
+        .setURL(downloadLink)
+        .setStyle(ButtonStyle.Link);
+
+    const row = new ActionRowBuilder()
+		.addComponents(button);
+
     // 대기 해제 및 답글 전송
-    await interaction.editReply(`다운로드 링크 : ${downloadLink}`);
+    await interaction.editReply({
+        content: '',
+        components: [row],
+    });
 
     // 다운 및 인코딩 한 파일 제거
     fs.unlinkSync(`./${videoTitle}.webm`);
     fs.unlinkSync(`./${videoTitle}.mp3`);
 
     console.log('--------------------')
-
-    // 10분 후 답글 삭제
-    await wait.setTimeout(() => {
-        interaction.deleteReply();
-    }, 1000 * 60 * 10);
 }
 
 function download(url) {
@@ -65,11 +71,10 @@ function download(url) {
         ytdl.getInfo(url, options)
             .then((info) => {
                 const videoTitle = info.videoDetails.title.replace(/<|>|:|"|\/|\\|\||\?|\*|^COM[0-9]$|^LPT[0-9]$|^CON$|^PRN$|^AUX$|^NUL$/gm, "-");
-                const video = ytdl(url, options);
-                const downloadPath = `./${videoTitle}.webm`;
-
-                video.pipe(fs.createWriteStream(downloadPath));
-
+                const video = ytdl(url, options)
+                    
+                video.pipe(fs.createWriteStream(`./${videoTitle}.webm`))
+                    
                 video.on('end', () => {
                     console.log(`노래제목: ${videoTitle}`)
                     console.log('다운로드 완료');
@@ -97,7 +102,6 @@ async function encode(videoTitle) {
             reject(err);
         })
     })
-
 }
 
 function upload(videoTitle) {
