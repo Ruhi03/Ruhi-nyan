@@ -1,6 +1,10 @@
 import { createLogger, format, transports } from "winston";
 
 const myFormat = format.printf(({ level, message, label, timestamp }) => {
+  if (typeof message === "object") {
+    message = JSON.stringify(message, null, 2);
+  }
+
   return `${timestamp} [${label}] ${level}: ${message}`;
 });
 
@@ -32,7 +36,7 @@ const logger = createLogger({
 if (process.env.NODE_ENV !== "production") {
   logger.add(
     new transports.Console({
-      format: format.combine(format.colorize(), format.simple()),
+      format: format.combine(format.colorize(), myFormat),
     })
   );
 }
