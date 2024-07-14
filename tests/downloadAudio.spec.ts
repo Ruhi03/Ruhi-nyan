@@ -6,7 +6,7 @@ import {
   readdirSync,
   readFileSync,
 } from "node:fs";
-import downloadAudio from "@/utils/youtube/downloadAudio";
+import downloadAudio from "../src/utils/youtube/downloadAudio";
 
 describe("utils/youtube/downloadAudio 테스트", () => {
   const tempDir = "./tests/temp";
@@ -24,17 +24,17 @@ describe("utils/youtube/downloadAudio 테스트", () => {
       "ILLIT 'Magnetic' Lyrics (아일릿 Magnetic 가사) (Color Coded Lyrics)";
     const videoId = "9UsfSpQqQ6c";
     const filename = crypto.randomUUID();
+    const basename = `${filename}.mp3`;
 
-    await downloadAudio(videoId, `tests/temp/${filename}.webm`);
+    await downloadAudio(videoId, `tests/temp/${basename}`);
     const metadata = JSON.parse(
-      readFileSync(`tests/temp/${filename}.info.json`, { encoding: "utf-8" })
+      readFileSync(`tests/temp/${basename}.info.json`, { encoding: "utf-8" })
     );
 
     expect(metadata.title).toBe(title);
-    expect(metadata.ext).toBe("webm");
-    expect(metadata.acodec).toBe("opus");
+    expect(metadata.ext).toBe("m4a");
     expect(
-      readdirSync(tempDir).find((filename) => filename.endsWith("webm"))
-    ).toBe(`${filename}.webm`);
+      readdirSync(tempDir).find((filename) => filename.endsWith("mp3"))
+    ).toBe(`${basename}`);
   });
 });

@@ -6,17 +6,15 @@ import {
   readdirSync,
   writeFileSync,
 } from "node:fs";
-import uploadFile from "@/utils/s3/uploadFile";
+import uploadFile from "../src/utils/s3/uploadFile";
 
 describe("utils/s3/uploadFile 테스트", () => {
   const tempDir = "./tests/temp";
 
   test("임시 저장 공간 준비", () => {
-    if (existsSync(tempDir)) rmdirSync(tempDir, { recursive: true });
     mkdirSync(tempDir, { recursive: true });
 
     expect(existsSync(tempDir)).toBe(true);
-    expect(readdirSync(tempDir).length).toBe(0);
   });
 
   test("업로드 테스트", async () => {

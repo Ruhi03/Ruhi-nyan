@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import logger from "./logger";
+import commands from "./commands";
 import "dotenv/config";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -17,8 +18,20 @@ client.on(Events.ClientReady, (client) => {
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === "ping") {
-    await interaction.reply("Pong!");
+  for (let i = 0; i < commands.length; i += 1) {
+    const command = commands[i];
+
+    if (interaction.commandName === command.command.name) {
+      try {
+        await command.execute(interaction);
+      } catch (error) {
+        logger.error(error);
+        await interaction.reply({
+          content: "명령어를 실행하는 도중 오류가 발생했습니다.",
+          ephemeral: true,
+        });
+      }
+    }
   }
 });
 
