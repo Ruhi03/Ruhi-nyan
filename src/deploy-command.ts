@@ -2,14 +2,12 @@ import { REST, Routes } from "discord.js";
 import commands from "./commands";
 import logger from "./logger";
 
-const token = process.env.TOKEN;
+const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
 
 if (!token || !clientId) {
   logger.error("Token or Client ID not found in environment variables.");
-  setTimeout(() => {
-    process.exit(1);
-  }, 1000);
+  process.exit(1);
 }
 
 const commandsInJson = commands.map((command) => {
@@ -32,8 +30,10 @@ try {
 
   logger.info("Successfully reloaded application (/) commands.");
 
-  const commandNames = commandsInJson.map((command) => command.name);
-  logger.info(`Deployed commands:\n${commandNames}`);
+  logger.info(`Deployed commands:`);
+  commands.forEach((command) => {
+    logger.info(`- ${command.command.name}`);
+  });
 } catch (error) {
   logger.error(error);
 }
