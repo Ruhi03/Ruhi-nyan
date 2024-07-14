@@ -22,11 +22,28 @@ const commandsInJson = commands.map((command) => {
 const rest = new REST({ version: "10" }).setToken(token);
 
 try {
+  const isProduction = process.env.NODE_ENV === "production";
+  const guildId = process.env.TO_REGISTER_GUILD;
+
+  if (!isProduction) {
+    logger.warn("Using guild commands deployment in development mode.");
+    if (!guildId) {
+      logger.error("Guild ID not found in environment variables.");
+      process.exit(1);
+    }
+  }
+
   logger.info("Started refreshing application (/) commands.");
 
-  await rest.put(Routes.applicationCommands(clientId), {
-    body: commandsInJson,
-  });
+  if (!isProduction && guildId) {
+    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+      body: commandsInJson,
+    });
+  } else {
+    await rest.put(Routes.applicationCommands(clientId), {
+      body: commandsInJson,
+    });
+  }
 
   logger.info("Successfully reloaded application (/) commands.");
 
