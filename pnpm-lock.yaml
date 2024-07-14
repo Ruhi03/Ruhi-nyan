@@ -23,9 +23,6 @@ importers:
       sanitize-filename:
         specifier: ^1.6.3
         version: 1.6.3
-      typescript:
-        specifier: ^5.0.0
-        version: 5.5.3
       utf-8-validate:
         specifier: ^6.0.4
         version: 6.0.4
@@ -42,6 +39,9 @@ importers:
         specifier: ^0.1.9
         version: 0.1.9
     devDependencies:
+      typescript:
+        specifier: ^5.5.3
+        version: 5.5.3
       vite-tsconfig-paths:
         specifier: ^4.3.2
         version: 4.3.2(typescript@5.5.3)(vite@5.3.3(@types/node@20.12.14))

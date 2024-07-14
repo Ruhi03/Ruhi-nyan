@@ -1,11 +1,13 @@
 {
   "name": "ruhi-nyan",
   "module": "index.ts",
-  "type": "module",
   "scripts": {
+    "dev": "tsc && node dist/index.js",
+    "build": "tsc",
     "test": "vitest"
   },
   "devDependencies": {
+    "typescript": "^5.5.3",
     "vite-tsconfig-paths": "^4.3.2"
   },
   "peerDependencies": {
