@@ -1,5 +1,7 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import logger from "./logger";
+import "dotenv/config";
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 if (!process.env.DISCORD_TOKEN) {
