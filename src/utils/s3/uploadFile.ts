@@ -3,11 +3,10 @@ import { createReadStream } from "fs";
 import { basename } from "path";
 import "dotenv/config";
 
-export default function uploadFile(path: string) {
-  const s3 = new S3Client({ region: "ap-northeast-2" });
+export default function uploadFile(path: string, filename: string) {
+  const s3 = new S3Client({ region: "ap-northeast-2", forcePathStyle: true });
 
   const file = createReadStream(path);
-  const filename = basename(path);
 
   file.on("error", (err) => {
     throw err;
