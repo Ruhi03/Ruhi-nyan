@@ -22,7 +22,7 @@ const commandsInJson = commands.map((command) => {
 
 const rest = new REST({ version: "10" }).setToken(token);
 
-async () => {
+(async () => {
   try {
     const isProduction = process.env.NODE_ENV === "production";
     const guildId = process.env.TO_REGISTER_GUILD;
@@ -56,4 +56,4 @@ async () => {
   } catch (error) {
     logger.error(error);
   }
-};
+})();
