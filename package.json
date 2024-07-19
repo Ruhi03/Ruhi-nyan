@@ -7,8 +7,7 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "typescript": "^5.5.3",
-    "vite-tsconfig-paths": "^4.3.2"
+    "typescript": "^5.5.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -18,7 +17,6 @@
     "bufferutil": "^4.0.8",
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
-    "sanitize-filename": "^1.6.3",
     "utf-8-validate": "^6.0.4",
     "vitest": "^2.0.2",
     "winston": "^3.13.1",
