@@ -7,7 +7,7 @@ export default function downloadAudio(link: string, filename?: string) {
       noCheckCertificates: true,
       noWarnings: true,
       addHeader: ["Referer:youtube.com", "User-Agent:Googlebot"],
-      format: "bestaudio[acodec=opus]",
+      format: "bestaudio[acodec=mp4a.40.2]",
       output: filename,
       writeInfoJson: true,
     },
