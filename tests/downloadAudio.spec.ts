@@ -36,5 +36,5 @@ describe("utils/youtube/downloadAudio 테스트", () => {
     expect(
       readdirSync(tempDir).find((filename) => filename.endsWith("mp3"))
     ).toBe(`${basename}`);
-  });
+  }, 10000);
 });
