@@ -11,10 +11,13 @@ export default async function downloadAudio(link: string, filepath: string) {
       format: "bestaudio",
       extractAudio: true,
       audioFormat: "mp3",
+      audioQuality: 0,
       output: filepath,
       writeInfoJson: true,
     })
-      .then(() => {
+      .then((stdout) => {
+        logger.info(stdout);
+
         const metadataPath = `${filepath}.info.json`;
         const metadata = JSON.parse(
           readFileSync(metadataPath, { encoding: "utf-8" })
