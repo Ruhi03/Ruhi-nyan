@@ -4,17 +4,17 @@ import {
   ButtonStyle,
   SlashCommandBuilder,
 } from "discord.js";
-import { readFileSync, unlinkSync } from "fs";
+import { unlinkSync } from "fs";
+import sanitize from "sanitize-filename";
 import BotSlashCommand from "../classes/BotSlashCommand";
 import downloadAudio from "../utils/youtube/downloadAudio";
 import uploadFile from "../utils/s3/uploadFile";
+import logger from "../logger";
 
 import type {
   ChatInputCommandInteraction,
   GuildTextBasedChannel,
 } from "discord.js";
-import type { Payload } from "youtube-dl-exec";
-import logger from "../logger";
 
 const command = new SlashCommandBuilder()
   .setName("다운로드")
@@ -41,26 +41,17 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     return interaction.editReply("링크를 입력해주세요.");
   }
 
-  const filename = crypto.randomUUID();
-  const basename = `${filename}.mp3`;
-  const path = `temp/${basename}`;
-  const metadataPath = `${path}.info.json`;
+  const filename = `${crypto.randomUUID()}.mp3`;
+  const filepath = `temp/${filename}`;
 
-  await downloadAudio(link, path);
-  const metadata: Payload = JSON.parse(
-    readFileSync(metadataPath, { encoding: "utf-8" })
-  );
+  const metadata = await downloadAudio(link, filepath);
   logger.info(`Downloaded: ${metadata.title}`);
 
-  const uploadFileName = `${metadata.title}.mp3`.replace(
-    /<|>|:|"|\/|\\|\||\?|\*/gm,
-    "-"
-  );
-  await uploadFile(path, uploadFileName);
+  const uploadFileName = sanitize(`${metadata.title}.mp3`);
+  await uploadFile(filepath, uploadFileName);
 
-  const downloadLink = `https://${
-    process.env.AWS_S3_BUCKET
-  }.s3.ap-northeast-2.amazonaws.com/${encodeURIComponent(uploadFileName)}`;
+  const s3Link = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com`;
+  const downloadLink = `${s3Link}/${encodeURIComponent(uploadFileName)}`;
   logger.info(`Uploaded to S3: ${downloadLink}`);
 
   const button = new ButtonBuilder()
@@ -75,8 +66,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     components: [row],
   });
 
-  unlinkSync(path);
-  unlinkSync(metadataPath);
+  unlinkSync(filepath);
 };
 
 export default new BotSlashCommand(command, execute);

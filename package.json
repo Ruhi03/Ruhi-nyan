@@ -17,6 +17,7 @@
     "bufferutil": "^4.0.8",
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
+    "sanitize-filename": "^1.6.3",
     "utf-8-validate": "^6.0.4",
     "vitest": "^2.0.2",
     "winston": "^3.13.1",
