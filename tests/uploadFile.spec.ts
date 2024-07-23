@@ -1,11 +1,5 @@
 import { expect, describe, test } from "vitest";
-import {
-  mkdirSync,
-  existsSync,
-  rmdirSync,
-  readdirSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync, existsSync, writeFileSync } from "node:fs";
 import uploadFile from "../src/utils/s3/uploadFile";
 
 describe("utils/s3/uploadFile 테스트", () => {
@@ -23,10 +17,8 @@ describe("utils/s3/uploadFile 테스트", () => {
 
     writeFileSync(path, "Hello, World!");
 
-    await uploadFile(path, filename);
-    const res = await fetch(
-      `https://${process.env.AWS_S3_BUCKET}.s3.ap-northeast-2.amazonaws.com/${filename}`
-    );
+    const url = await uploadFile(path, filename);
+    const res = await fetch(url);
 
     expect(res.status).toBe(200);
     expect(await res.text()).toBe("Hello, World!");
