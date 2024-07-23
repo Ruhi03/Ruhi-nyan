@@ -7,7 +7,7 @@ WORKDIR /app
 
 RUN apk update
 RUN apk upgrade
-RUN apk add --no-cache python3 py3-pip make gcc g++ linux-headers musl-dev
+RUN apk add --no-cache ffmpeg python3 py3-pip make gcc g++ linux-headers musl-dev
 
 RUN pnpm install -g pm2
 
